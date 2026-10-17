@@ -18,5 +18,10 @@
   "deployment_recipe_repository": "https://github.com/xiaolinxi-ai/agent2api-northflank",
   "build_source": "private GitHub archive bundle",
   "automatic_ci": false,
-  "normal_start_requires_existing_replica": true
+  "normal_start_requires_existing_replica": true,
+  "deployed_recipe_commit": "88b24ca5506e24c2b6101fd66224a2aa2fbe65a0",
+  "build_id": "terrific-powder-9933",
+  "deployed_image": "registry.northflank.com/northflank/service/6ad30309e110157bfd044e6b:6ad3128cd792e19b3ab29c90",
+  "deployed_image_manifest_sha256": "468d569ad4190c2b914f8e1c6cf563de81eee7bada42bc4889b59e48804888e7",
+  "validated_on": "2026-10-17"
 }

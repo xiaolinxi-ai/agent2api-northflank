@@ -35,7 +35,7 @@ Northflank 的 GitHub 集成无法直接读取新私有仓库，当前使用 bun
 2. 确认数据库已同步；通过 Northflank API 暂停 agent2api，并等待原容器退出。MinIO addon 保持运行。不能同时运行两份此应用。
 3. 使用 GitHub 认证 API 请求该提交的 tarball，取得临时签名下载 URL。签名地址不能提交到仓库或写入公开日志。
 4. POST /v1/projects/first/services/agent2api/build，请求体为 {"bundleUrl":"临时签名URL","sha":"完整提交SHA"}。Combined service 不传 branch 字段。每次构建使用新的临时 URL。
-5. 等待构建成功，选择该 buildId 部署；恢复为 1 实例。确认新容器恢复数据库，面板可访问，旧密钥鉴权成功，匿名请求返回 401。
+5. 等待构建成功，POST /v1/projects/first/services/agent2api/deployment，传入 {"internal":{"id":"agent2api","branch":"codex-northflank-deploy","buildId":"实际buildId"}}；不要同时传 buildSHA。再 POST /v1/projects/first/services/agent2api/resume，传入 {"instances":1,"disabledCI":true,"disabledCD":true}。确认新容器恢复数据库，面板可访问，旧密钥鉴权成功，匿名请求返回 401。
 6. 更新运维记录中的实际构建 ID、镜像与提交。失败时暂停应用，回退上一个已验证镜像，保留 MinIO 数据。涉及数据库不兼容迁移时先恢复对应版本备份。
 
 普通启动要求备份存在并恢复成功。只有全新安装时，才可临时设置 AGENT2API_ALLOW_EMPTY_DB=1，并同时预置管理员及网关密钥；首次备份确认成功后立即移除这些初始化变量。正常运行不可开启 ALLOW_EMPTY_DB。
@@ -51,3 +51,13 @@ Northflank 的 GitHub 集成无法直接读取新私有仓库，当前使用 bun
 4. 回 Northflank 验证，给已验证域名添加子域名，关联 first/agent2api 的 http:3065 端口。
 5. 根据 Northflank 给出的目标添加路由 CNAME，等待证书签发，测试 HTTPS 和流式响应。
 6. 如启用 Cloudflare 代理，SSL/TLS 使用 Full (strict)，该子域名不要缓存 /api/*、/v1/*，避免对 API 启用交互式挑战。具体记录值必须从此次域名绑定返回，不能照抄其他服务。
+
+## 验收记录（2026-10-17）
+
+- 上游 v3.0.8；实际部署配方提交、buildId 和镜像见 deployment.json。
+- 构建成功，Northflank deployment COMPLETED，最终只有一个运行实例。
+- 已实测两次替换容器并从 MinIO 恢复数据库；SQLite integrity_check 为 ok。
+- 当前管理员 admin、Default 网关 Key 均保留；移除初始化环境变量后，持久化网关 Key 仍可通过鉴权，初始化 Key 已失效。
+- /health、/login 返回 200；未登录管理请求和未带 Key 的聊天请求返回 401。
+- 当前提供商账号数为 0，未进行真实模型生成测试；需用户登录面板添加账号。
+- 原 wb2api 服务镜像、部署提交、运行时环境与实例数未变化；/healthz 显示 upstream_ok=true。
