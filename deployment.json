@@ -1,0 +1,15 @@
+{
+  "upstream": "https://github.com/aimod-cc/agent2api",
+  "upstream_version": "v3.0.8",
+  "upstream_commit": "68d0a4e4bfd8dc5a1daa296c61e0cc0b10a871da",
+  "image": "aimodcc/agent2api:3.0.8@sha256:be62351d36716708ab50702a162bd13c54e6782cdb9dfecdac36a34003c87029",
+  "litestream_image": "litestream/litestream:0.5.17@sha256:4b02b9859a6b6b4087d8b8944e15f7e984bd7957cba322bbeee38b0e27b9656a",
+  "team": "xiaolis-team",
+  "project": "first",
+  "service": "agent2api",
+  "addon": "agent2api-store",
+  "compute_plan": "nf-compute-20",
+  "instances": 1,
+  "persistence": "private MinIO addon, Litestream sync interval1s",
+  "self_update": false
+}
