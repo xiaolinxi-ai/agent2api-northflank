@@ -15,7 +15,12 @@ case "$status" in
   409) grep -q '<Code>BucketAlreadyOwnedByYou</Code>' /tmp/bucket-result.xml || { echo 'Unexpected bucket conflict' >&2; exit 1; } ;;
   *) echo "Object storage initialization failed: HTTP $status" >&2; exit 1 ;;
 esac
-# Fail startup on a restore error. A missing replica is allowed only for first use.
-litestream restore -config /etc/litestream.yml -if-db-not-exists -if-replica-exists /tmp/agent2api-data/agent2api.db
+# Only the initial, supervised bootstrap may start without a replica.
+# Normal starts fail closed if the backup is missing or cannot be restored.
+if [ "${AGENT2API_ALLOW_EMPTY_DB:-0}" = "1" ]; then
+  litestream restore -config /etc/litestream.yml -if-db-not-exists -if-replica-exists /tmp/agent2api-data/agent2api.db
+else
+  litestream restore -config /etc/litestream.yml -if-db-not-exists /tmp/agent2api-data/agent2api.db
+fi
 # Litestream supervises the app and flushes replication during graceful shutdown.
 exec litestream replicate -config /etc/litestream.yml -exec /usr/local/bin/agent2api-server

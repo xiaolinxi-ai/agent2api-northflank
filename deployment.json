@@ -11,5 +11,12 @@
   "compute_plan": "nf-compute-20",
   "instances": 1,
   "persistence": "private MinIO addon, Litestream sync interval1s",
-  "self_update": false
+  "self_update": false,
+  "service_uid": "6ad30309e110157bfd044e6b",
+  "panel_url": "https://http--agent2api--xjmpj72ycwc8.code.run/login",
+  "api_base_url": "https://http--agent2api--xjmpj72ycwc8.code.run/v1",
+  "deployment_recipe_repository": "https://github.com/xiaolinxi-ai/agent2api-northflank",
+  "build_source": "private GitHub archive bundle",
+  "automatic_ci": false,
+  "normal_start_requires_existing_replica": true
 }
